@@ -127,6 +127,21 @@ class Sendit_Bliskapaczka_Helper_Data extends Mage_Core_Helper_Data
     }
 
     /**
+     * Get operators and prices from Bliskapaczka API
+     *
+     * @return string
+     */
+    public function getPriceListForCarrier()
+    {
+        $apiClient = $this->getApiClientPricingTodoor();
+        $priceList = $apiClient->get(
+            array("parcel" => array('dimensions' => $this->getParcelDimensions()))
+        );
+
+        return json_decode($priceList);
+    }
+
+    /**
      * Get widget configuration
      *
      * @param array $priceList
@@ -195,6 +210,21 @@ class Sendit_Bliskapaczka_Helper_Data extends Mage_Core_Helper_Data
     public function getApiClientPricing()
     {
         $apiClient = new \Bliskapaczka\ApiClient\Bliskapaczka\Pricing(
+            Mage::getStoreConfig(self::API_KEY_XML_PATH),
+            $this->getApiMode(Mage::getStoreConfig(self::API_TEST_MODE_XML_PATH))
+        );
+
+        return $apiClient;
+    }
+
+    /**
+     * Get Bliskapaczka API Client
+     *
+     * @return \Bliskapaczka\ApiClient\Bliskapaczka
+     */
+    public function getApiClientPricingTodoor()
+    {
+        $apiClient = new \Bliskapaczka\ApiClient\Bliskapaczka\Pricing\Todoor(
             Mage::getStoreConfig(self::API_KEY_XML_PATH),
             $this->getApiMode(Mage::getStoreConfig(self::API_TEST_MODE_XML_PATH))
         );
